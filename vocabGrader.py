@@ -9,13 +9,14 @@ from fractions import Fraction
 
 
 my_path = os.path.join('.', 'sampleResponses.csv')
-advisories = ['SHN', 'BOS', 'BNU Cats', 'Casa Amigos']
+advisories = ['SHN', 'BOS', "'BNU Cats", 'Casa Amigos']
+today = (datetime.datetime.now()).date()
 
 def vocabGrader(path):
     '''
     Grades vocab quiz response csv
     '''
-    print('Grading voab quizzes...')
+    print('Grading vocab quizzes...')
 
     scores = pd.read_csv(path)
     # print(scores['Score'])
@@ -24,6 +25,7 @@ def vocabGrader(path):
     scores.columns = ['Name', 'Score', 'Homeroom']
 
     for a in advisories:
+        print(f'Getting data for {a}')
         dat = scores
         df = dat.loc[np.where(dat['Homeroom'] == a)]
 
@@ -38,7 +40,15 @@ def vocabGrader(path):
         print(f'{a} class std dev: ', np.std(df['Score']))
 
 
-        print('Scholars of concern: ', df.loc[np.where(df['Score'] <= 50.)]['Name'])
+        # print('Scholars of concern: ', df.loc[np.where(df['Score'] <= 50.)]['Name'])
+
+        grades_path = os.path.join('grades', f'grades-{today}')
+        if not os.path.isdir(grades_path):
+            os.mkdir(grades_path)
+        advisory_path_name = a.replace(' ', '-')
+        file_name = f'vocab-grades-{advisory_path_name}-{today}.csv'
+        file_path = os.path.join(grades_path, file_name)
+        df.to_csv(file_path)
         
     
 
